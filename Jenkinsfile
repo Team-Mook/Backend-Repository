@@ -12,7 +12,9 @@ pipeline {
         }
         stage('Build') {
             steps {
-                sh "./gradlew clean build"
+                withEnv(["JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64", "PATH=$JAVA_HOME/bin:$PATH"]) {
+                    sh './gradlew clean build'
+                }
             }
         }
     }
