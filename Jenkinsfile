@@ -14,7 +14,7 @@ pipeline {
             steps {
                 withEnv(["JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64", "PATH=$JAVA_HOME/bin:$PATH"]) {
                     sh './gradlew --version'
-                    sh './gradlew clean build'
+                    sh './gradlew clean bootjar'
                 }
             }
         }
