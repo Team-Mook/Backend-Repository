@@ -11,7 +11,7 @@ pipeline {
         }
         stage('Build') {
             steps {
-                dir("./mook") {
+                dir("mook") {
                     sh "./gradlew clean build"
                 }
             }
