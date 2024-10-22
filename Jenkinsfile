@@ -11,7 +11,7 @@ pipeline {
         }
         stage('Build') {
             steps {
-                sh "./gradlew clean build --scan"
+                sh "./gradlew clean build"
             }
         }
     }
