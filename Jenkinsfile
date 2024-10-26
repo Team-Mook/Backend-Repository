@@ -5,7 +5,7 @@ pipeline {
     }
 
     environment {
-        imagename = "normaininha/mook-docker-image"
+        imagename = "normaininha/mook"
         registryCredential = 'docker-hub'
         dockerImage = ''
     }
@@ -68,7 +68,7 @@ pipeline {
             steps {
                 echo 'Push Docker Image to Docker Hub'
                 script {
-                    docker.withRegistry('', registryCredential) {
+                    docker.withRegistry('https://index.docker.io/v1/', 'docker-hub') {
                         dockerImage.push()
                     }
                 }
@@ -84,9 +84,9 @@ pipeline {
             steps {
                 echo 'Pull Docker Image & Run Docker Container on EC2'
                 sshagent (credentials: ['deploy-ssh-key']) {
-                    sh "ssh -o StrictHostKeyChecking=no ubuntu@3.39.38.199 'docker pull normaininha/mook-docker-image:latest'"
+                    sh "ssh -o StrictHostKeyChecking=no ubuntu@3.39.38.199 'docker pull normaininha/mook:latest'"
                     sh "ssh -o StrictHostKeyChecking=no ubuntu@3.39.38.199 'docker ps -q --filter name=mook-docker-container | grep -q . && docker rm -f \$(docker ps -aq --filter name=mook-docker-container)'"
-                    sh "ssh -o StrictHostKeyChecking=no ubuntu@3.39.38.199 'docker run -d --name mook-docker-container -p 8080:8080 normaninha/mook-docker-image:latest'"
+                    sh "ssh -o StrictHostKeyChecking=no ubuntu@3.39.38.199 'docker run -d --name mook-docker-container -p 8080:8080 normaninha/mook:latest'"
                 }
             }
         }
