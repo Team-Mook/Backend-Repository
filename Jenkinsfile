@@ -5,7 +5,7 @@ pipeline {
     }
 
     environment {
-        imagename = "mook-docker-image"
+        imagename = "normaininha/mook-docker-image"
         registryCredential = 'docker-hub'
         dockerImage = ''
     }
