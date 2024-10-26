@@ -19,5 +19,17 @@ pipeline {
                 sh './gradlew clean build'
             }
         }
+        stage('deploy') {
+            steps {
+                sshagent(credentials: ['deploy-ssh-key']) {
+                    sh '''
+                        ssh -o StrictHostKeyChecking=no ubuntu@3.39.38.199 uptime
+                        scp /var/jenkins_home/workspace/spring-pipeline/build/libs/*.jar ubuntu@3.39.38.199:/home/ubuntu/demo
+                        ssh -t ubuntu@3.39.38.199 chmod +x ./deploy.sh
+                        ssh -t ubuntu@3.39.38.199 ./deploy.sh
+                    '''
+                }
+            }
+        }
     }
 }
