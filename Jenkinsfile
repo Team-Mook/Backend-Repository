@@ -5,7 +5,7 @@ pipeline {
     }
 
     environment {
-        imagename = "normaininha/mook"
+        imagename = "normaninha/mook"
         registryCredential = 'docker-hub'
         dockerImage = ''
     }
@@ -68,7 +68,7 @@ pipeline {
             steps {
                 echo 'Push Docker Image to Docker Hub'
                 script {
-                    docker.withRegistry([ credentialsId: "docker-hub-credentials", url: "" ]) {
+                    docker.withRegistry('https://index.docker.io/v1/', 'docker-hub') {
                         dockerImage.push()
                     }
                 }
