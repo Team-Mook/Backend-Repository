@@ -68,7 +68,7 @@ pipeline {
             steps {
                 echo 'Push Docker Image to Docker Hub'
                 script {
-                    docker.withRegistry('https://index.docker.io/v1/', 'docker-hub') {
+                    docker.withRegistry('', 'docker-hub') {
                         dockerImage.push()
                     }
                 }
