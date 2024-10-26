@@ -63,6 +63,11 @@ pipeline {
                 }
             }
         }
+        stage('test') {
+            steps {
+                echo "1"
+            }
+        }
 
         stage('Push Docker') {
             steps {
