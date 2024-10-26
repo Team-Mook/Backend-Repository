@@ -23,7 +23,6 @@ pipeline {
             steps {
                 sshagent(['deploy-ssh-key']) {
                     sh '''
-                        echo "1"
                         ssh -o StrictHostKeyChecking=no ubuntu@3.39.38.199 uptime
                         scp ~/Desktop/study/mook/build/libs/*.jar ubuntu@3.39.38.199:/home/ubuntu/demo
                         ssh -t ubuntu@3.39.38.199 chmod +x ./deploy.sh
