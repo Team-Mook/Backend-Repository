@@ -85,7 +85,15 @@ pipeline {
                 echo 'Pull Docker Image & Run Docker Container on EC2'
                 sshagent (credentials: ['deploy-ssh-key']) {
                     sh "ssh -o StrictHostKeyChecking=no ubuntu@3.39.38.199 'docker pull normaninha/mook:latest'"
-                    sh "ssh -o StrictHostKeyChecking=no ubuntu@3.39.38.199 'docker ps -q --filter name=mook-docker-container | grep -q . && docker rm -f \$(docker ps -aq --filter name=mook-docker-container)'"
+                    sh """
+                        ssh -o StrictHostKeyChecking=no ubuntu@3.39.38.199 '
+                            if docker ps -q --filter name=mook-docker-container | grep -q .; then
+                                docker rm -f \$(docker ps -aq --filter name=mook-docker-container)
+                            else
+                                echo "No container to remove"
+                            fi
+                        '
+                    """
                     sh "ssh -o StrictHostKeyChecking=no ubuntu@3.39.38.199 'docker run -d --name mook-docker-container -p 8080:8080 normaninha/mook:latest'"
                 }
             }
