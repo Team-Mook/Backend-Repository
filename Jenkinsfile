@@ -3,31 +3,79 @@ pipeline {
     tools {
         gradle 'gradle'
     }
+
+    environment {
+        imagename = "mook-docker-image"
+        registryCredential = 'docker-hub'
+        dockerImage = ''
+    }
+
     stages {
         stage('Clean Before Build') {
             steps {
                 deleteDir() // 빌드 전에 워크스페이스 정리
             }
         }
+
         stage('Git Clone') {
             steps {
                 git branch: 'main', url: 'https://github.com/Team-Mook/Backend-Repository.git'
             }
+            post {
+                failure {
+                    error 'This pipeline stops here...'
+                }
+            }
         }
+
         stage('Build') {
             steps {
                 sh './gradlew clean build'
             }
+            post {
+                failure {
+                    error 'This pipeline stops here...'
+                }
+            }
         }
-        stage('deploy') {
+
+        stage('Build Docker') {
             steps {
-                sshagent(['deploy-ssh-key']) {
-                    sh '''
-                        ssh -o StrictHostKeyChecking=no ubuntu@3.39.38.199 uptime
-                        scp ~/Desktop/study/mook/build/libs/*.jar ubuntu@3.39.38.199:/home/ubuntu/demo
-                        ssh -t ubuntu@3.39.38.199 chmod +x ./deploy.sh
-                        ssh -t ubuntu@3.39.38.199 ./deploy.sh
-                    '''
+                echo 'Build Docker Image'
+                script {
+                    dockerImage = docker.build imagename
+                }
+            }
+            post {
+                failure {
+                    error 'This pipeline stops here...'
+                }
+            }
+        }
+
+        stage('Push Docker') {
+            steps {
+                echo 'Push Docker Image to Docker Hub'
+                script {
+                    docker.withRegistry('', registryCredential) {
+                        dockerImage.push()
+                    }
+                }
+            }
+            post {
+                failure {
+                    error 'This pipeline stops here...'
+                }
+            }
+        }
+
+        stage('Docker Run') {
+            steps {
+                echo 'Pull Docker Image & Run Docker Container on EC2'
+                sshagent (credentials: ['deploy-ssh-key']) {
+                    sh "ssh -o StrictHostKeyChecking=no ubuntu@3.39.38.199 'docker pull normaininha/mook-docker-image:latest'"
+                    sh "ssh -o StrictHostKeyChecking=no ubuntu@3.39.38.199 'docker ps -q --filter name=mook-docker-container | grep -q . && docker rm -f \$(docker ps -aq --filter name=mook-docker-container)'"
+                    sh "ssh -o StrictHostKeyChecking=no ubuntu@3.39.38.199 'docker run -d --name mook-docker-container -p 8080:8080 normaninha/mook-docker-image:latest'"
                 }
             }
         }
