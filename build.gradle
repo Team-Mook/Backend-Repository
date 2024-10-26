@@ -7,6 +7,18 @@ plugins {
 group = 'org.teamMook'
 version = '0.0.1-SNAPSHOT'
 
+springBoot {
+	mainClass = 'org.teamMook.mook.MookApplication' // 실제 메인 클래스의 경로로 변경
+}
+
+jar {
+	enabled = false // 기본 JAR 생성 비활성화
+}
+
+bootJar {
+	enabled = true // Spring Boot 실행 JAR 활성화
+}
+
 java {
 	toolchain {
 		languageVersion = JavaLanguageVersion.of(17)

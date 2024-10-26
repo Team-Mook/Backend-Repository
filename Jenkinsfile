@@ -44,8 +44,8 @@ pipeline {
                 writeFile file: 'Dockerfile', text: """
                 FROM openjdk:17-jdk-slim
                 WORKDIR /app
-                COPY build/libs/mook-0.0.1-SNAPSHOT.jar app.jar
-                ENTRYPOINT ["java", "-jar", "app.jar"]
+                COPY build/libs/*.jar /app/
+                ENTRYPOINT ["sh", "-c", "java -jar /app/*.jar"]
                 """
             }
         }
