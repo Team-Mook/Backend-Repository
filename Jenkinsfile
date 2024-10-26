@@ -63,17 +63,12 @@ pipeline {
                 }
             }
         }
-        stage('test') {
-            steps {
-                echo "1"
-            }
-        }
 
         stage('Push Docker') {
             steps {
                 echo 'Push Docker Image to Docker Hub'
                 script {
-                    docker.withRegistry('https://index.docker.io/v1/', 'docker-hub') {
+                    docker.withRegistry([ credentialsId: "docker-hub-credentials", url: "" ]) {
                         dockerImage.push()
                     }
                 }
