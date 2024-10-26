@@ -39,6 +39,17 @@ pipeline {
             }
         }
 
+        stage('Create Dockerfile') {
+            steps {
+                writeFile file: 'Dockerfile', text: """
+                FROM openjdk:17-jdk-slim
+                WORKDIR /app
+                COPY build/libs/*.jar /app/
+                ENTRYPOINT ["sh", "-c", "java -jar /app/*.jar"]
+                """
+            }
+        }
+
         stage('Build Docker') {
             steps {
                 echo 'Build Docker Image'
